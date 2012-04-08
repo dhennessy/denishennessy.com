@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Denis Hennessy]]></title>
-  <link href="http://www.denishennessy.com/atom.xml" rel="self"/>
-  <link href="http://www.denishennessy.com/"/>
-  <updated>2012-04-08T20:58:07+01:00</updated>
-  <id>http://www.denishennessy.com/</id>
+  <link href="http://dhennessy.github.com/atom.xml" rel="self"/>
+  <link href="http://dhennessy.github.com/"/>
+  <updated>2012-04-08T21:27:26+01:00</updated>
+  <id>http://dhennessy.github.com/</id>
   <author>
     <name><![CDATA[Denis Hennessy]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Blog Reboot]]></title>
-    <link href="http://www.denishennessy.com/blog/2012/04/06/blog-reboot/"/>
+    <link href="http://dhennessy.github.com/blog/2012/04/06/blog-reboot/"/>
     <updated>2012-04-06T20:47:00+01:00</updated>
-    <id>http://www.denishennessy.com/blog/2012/04/06/blog-reboot</id>
+    <id>http://dhennessy.github.com/blog/2012/04/06/blog-reboot</id>
     <content type="html"><![CDATA[<p>My old blog had been a bit neglected, especially since I did most of the software-related
 posts on my <a href="http://www.peerassembly.com/blog.html">work blog</a>. That blog is probably
 going to continue to get the majority of my blogging energy (such as it is) but I thought
