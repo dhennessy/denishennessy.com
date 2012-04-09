@@ -4,7 +4,7 @@
   <title><![CDATA[Denis Hennessy]]></title>
   <link href="http://denishennessy.com/atom.xml" rel="self"/>
   <link href="http://denishennessy.com/"/>
-  <updated>2012-04-09T01:54:46+01:00</updated>
+  <updated>2012-04-09T12:16:08+01:00</updated>
   <id>http://denishennessy.com/</id>
   <author>
     <name><![CDATA[Denis Hennessy]]></name>
@@ -12,6 +12,116 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Measuring Battery Capacity with an Arduino]]></title>
+    <link href="http://denishennessy.com/2012/04/08/measuring-battery-capacity-with-an-arduino/"/>
+    <updated>2012-04-08T22:25:00+01:00</updated>
+    <id>http://denishennessy.com/2012/04/08/measuring-battery-capacity-with-an-arduino</id>
+    <content type="html"><![CDATA[<p>I needed a couple of AA batteries and found the display at the supermarket where they were
+all arrayed. Normally when I&#8217;m shopping in the supermarket, I tend to look at the price/kg
+or price/l when comparing similar products. In the case of the batteries, there was no such
+indicator. Fine, I thought, I&#8217;ll work it out myself. I grabbed a few different makes and
+scanned the packaging for some measure of their capacity.  Nothing. Not a single one of
+the batteries had any indicator of how much energy they would provide. Instead, they all
+had terms like &#8216;PLUS&#8217;, &#8216;SUPER&#8217;, &#8216;ULTRA&#8217; and of course had wildly differing prices. So, I
+decided that it was time for an experiment and bought one pack of every type I could find.
+<img src="http://denishennessy.com/images/bat_batteries.png"></p>
+
+<h2>The Plan</h2>
+
+<p><img class="right" src="http://denishennessy.com/images/bat_front.png">
+My idea was really simple: I would make a circuit that would fully discharge each of the
+batteries while measuring how much energy it produced (displayed in Joules and in
+Watt-Hours. I had an Arduino and an LCD panel left over from a different project so I
+thought I&#8217;d make a standalone unit. As the design evolved, I let two additional features
+creep in:</p>
+
+<ol>
+<li>Add a temperature sensor to track ambient temperature during the test since that certainly
+affects battery capacity.</li>
+<li>Add a USB logging capability so that I could capture all the data to plot terminal voltage
+as the battery discharges.</li>
+</ol>
+
+
+<p>Note: This was never intended to be a scientific instrument to measure how long a battery
+would power your circuit - it&#8217;s designed to provide a relative comparison of different
+batteries using a similar load.</p>
+
+<h2>The Design</h2>
+
+<p>The circuit works by measuring the voltage across a fixed load every second until the
+voltage drops to less than 0.2V. For simplicity, I used a resistive load (the original
+plan was to use a 4.7R resistor but I didn&#8217;t have any high power resistors to hand so I
+used 4 22R resistors in parallel instead giving me an effective load of 5.5R. Here&#8217;s the
+final circuit:
+<img src="http://denishennessy.com/images/bat_schematic.png">
+<a href="http://www.adafruit.com/products/271">This case</a> from adafruit ended up being perfect
+because it already has cutouts and standoffs for the arduino and the LCD. All that was left
+was to add a little bit of stripboard to hold the extra components. Note that the whole
+circuit is powered from the USB connection (or the DC jack) - all the power from the battery
+is consumed by the load resistors.
+<img src="http://denishennessy.com/images/bat_inside_case.png"></p>
+
+<h2>The Software</h2>
+
+<p>When the unit resets, it waits until a battery is connected before starting any measurements.
+Once it detects a battery, it measures the temperature and voltage once a second and displays
+the cumulative energy in Joules and Watt-Hours on the display.
+<img src="http://denishennessy.com/images/bat_display.png">
+It also logs the readings to the USB port once per second. You can capture these to a text
+file with any terminal emulator but I found the easiest thing to do was to use screen:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>screen -L /dev/tty.usbmodemfd131 9600
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the voltage drops below 0.2V, it will stop measuring and display the total energy
+produced. If you&#8217;re using screen to capture the data, quit it with ^A ^K and rename the
+logfile to something more memorable:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mv screenlog.0 duracell-simply.csv
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The CSV file has a line for every second of the test. For graphing, it&#8217;s easier to make
+a version of the file with an entry sampled every minute:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>awk <span class="s1">&#39;NR % 60 == 1&#39;</span> duracell-simply.csv &gt; duracell-simply-mins.csv
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>The Results</h2>
+
+<p>So far, I&#8217;ve captured the data from 10 brands of alkaline battery. In each case, I took
+1 battery from the pack and measured its capacity. Obviously, it would be better to take
+a selection of each and average the results but I didn&#8217;t want to waste all my batteries
+on the test.</p>
+
+<p><img src="http://denishennessy.com/images/bat_graph.png"></p>
+
+<p>In most cases, I bought the batteries in packs of 4. It&#8217;s interesting to take the cost of
+each battery (pack cost / pack size) and combine that with the measured capacity:</p>
+
+<p><img src="http://denishennessy.com/images/bat_grid.png"></p>
+
+<p>This lets us compare each of the batteries in terms of the cost per Watt-Hour (which is
+really all you should care about when buying them). Obviously, lower is better:</p>
+
+<p><img src="http://denishennessy.com/images/bat_summary.png"></p>
+
+<p>There&#8217;s a difference of over 9X between the best value (RS Power Ultra) and the worst
+value (Panasonic Evolta).</p>
+
+<p>I&#8217;ve posted the schematic, source code and results files on
+<a href="https://github.com/dhennessy/BatteryCapacityTester">GitHub</a>. If you build one,
+please share your results&#8230;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Blog Reboot]]></title>
